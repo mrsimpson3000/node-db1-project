@@ -28,11 +28,9 @@ router.get("/:id", (req, res) => {
       if (account) {
         res.status(200).json({ data: account });
       } else {
-        res
-          .status(404)
-          .json({
-            message: `No posts with the ID of ${req.params.id}. Please try another ID.`,
-          });
+        res.status(404).json({
+          message: `No posts with the ID of ${req.params.id}. Please try another ID.`,
+        });
       }
     })
     .catch((error) => {
@@ -40,5 +38,32 @@ router.get("/:id", (req, res) => {
       res.status(500).json({ error: error.message });
     });
 });
+
+// Posts a new account to the DB. The name and budget field are required.
+router.post("/", (req, res) => {
+  const account = req.body;
+  if (isValidAccount(account)) {
+    db("accounts")
+      .insert(account, "id")
+      .then((ids) => {
+        res.status(201).json({ data: ids });
+      })
+      .catch((error) => {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+      });
+  } else {
+    res
+      .status(400)
+      .json({
+        message: "Both name and budget are required. Please try again.",
+      });
+  }
+});
+
+// Checks to see if all parts of data required to make a new post are included in the data
+function isValidAccount(account) {
+  return Boolean(account.name && account.budget);
+}
 
 module.exports = router;
