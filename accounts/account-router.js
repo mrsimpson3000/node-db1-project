@@ -88,6 +88,28 @@ router.put("/:id", (req, res) => {
   }
 });
 
+// Delete an account based on account ID
+router.delete("/:id", (req, res) => {
+  db("accounts")
+    .where({ id: req.params.id })
+    .del()
+    .then((count) => {
+      if (count) {
+        res
+          .status(200)
+          .json({ message: "The account was deleted successfully." });
+      } else {
+        res.status(404).json({
+          message: `No posts with the ID of ${req.params.id}. Please try another ID.`,
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({ error: error.message });
+    });
+});
+
 // Checks to see if all parts of data required to make a new post are included in the data
 function isValidAccount(account) {
   return Boolean(account.name && account.budget);
