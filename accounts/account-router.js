@@ -53,11 +53,38 @@ router.post("/", (req, res) => {
         res.status(500).json({ error: error.message });
       });
   } else {
-    res
-      .status(400)
-      .json({
-        message: "Both name and budget are required. Please try again.",
+    res.status(400).json({
+      message: "Both name and budget are required. Please try again.",
+    });
+  }
+});
+
+// Makes a change to an existing account
+router.put("/:id", (req, res) => {
+  const changes = req.body;
+  if (isValidAccount(changes)) {
+    db("accounts")
+      .where({ id: req.params.id })
+      .update(changes)
+      .then((count) => {
+        if (count) {
+          res
+            .status(200)
+            .json({ message: "The account was updated successfully." });
+        } else {
+          res.status(404).json({
+            message: `No posts with the ID of ${req.params.id}. Please try another ID.`,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        res.status(500).json({ error: error.message });
       });
+  } else {
+    res.status(400).json({
+      message: "Both name and budget are required. Please try again.",
+    });
   }
 });
 
