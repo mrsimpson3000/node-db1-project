@@ -17,4 +17,28 @@ router.get("/", (req, res) => {
     });
 });
 
+// GETS an account from the DB based on ID
+router.get("/:id", (req, res) => {
+  db("accounts")
+    .where({
+      id: req.params.id,
+    })
+    .first()
+    .then((account) => {
+      if (account) {
+        res.status(200).json({ data: account });
+      } else {
+        res
+          .status(404)
+          .json({
+            message: `No posts with the ID of ${req.params.id}. Please try another ID.`,
+          });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({ error: error.message });
+    });
+});
+
 module.exports = router;
